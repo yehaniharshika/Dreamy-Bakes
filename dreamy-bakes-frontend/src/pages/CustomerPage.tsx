@@ -13,8 +13,8 @@ import {
 } from "react-bootstrap";
 import { MdSearch } from "react-icons/md";
 import { Navigation } from "../components/Navigation";
-import { useDispatch } from "react-redux";
-import { AppDispatch } from "../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
 
 const CustomerPage = () => {
   const [show, setShow] = useState(false);
@@ -27,18 +27,44 @@ const CustomerPage = () => {
   const [contactNum, setContactNum] = useState("");
 
   const dispatch = useDispatch<AppDispatch>();
+  const customers = useSelector((state: RootState) => state.customers);
+
+  const handleSave = () => {
+    // Implement customer save logic here
+    console.log("Saving customer:", {
+      customerId,
+      customerName,
+      address,
+      contactNum,
+    });
+  };
+
+  const handleUpdate = () => {
+    // Implement customer update logic here
+    console.log("Updating customer:", {
+      customerId,
+      customerName,
+      address,
+      contactNum,
+    });
+  };
+
+  const handleDelete = (customerId: string, event: React.MouseEvent) => {
+    event.stopPropagation(); // Prevent row click when deleting
+    console.log("Deleting customer with ID:", customerId);
+  };
 
   return (
     <>
       <div className="flex overflow-hidden bg-emerald-200">
         <Navigation />
-        <div className="flex-1 p-5" style={{ backgroundColor: "#cec4ff" }}>
+        <div className="flex-1 p-5" style={{ backgroundColor: "#b78fa8" }}>
           <Container fluid>
             <Row className="align-items-center mb-3">
               <Col md={12}>
                 <motion.div
                   className="p-3 rounded top-50"
-                  style={{ backgroundColor: "#8854d0" }}
+                  style={{ backgroundColor: "#a97897" }}
                   initial={{ opacity: 0, y: -50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.8, ease: "easeOut" }}
@@ -52,9 +78,9 @@ const CustomerPage = () => {
                       <motion.h4
                         className="font-bold text-2xl text-neutral-100"
                         style={{
-                          fontFamily: "'Ubuntu', sans-serif",
-                          fontWeight: "bold",
-                          color: "white",
+                          color: "#6F1E51",
+                          fontFamily: "'Lilita One', cursive",
+                          fontSize: "23px",
                         }}
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
@@ -74,13 +100,15 @@ const CustomerPage = () => {
             <br />
             <div className="flex justify-between items-center mb-4">
               <Button
-                variant="primary"
                 onClick={handleShow}
                 className="h-10 max-w-40 font-bold"
                 style={{
                   fontFamily: "'Montserrat', serif",
                   fontSize: "15px",
                   fontWeight: "bold",
+                  backgroundColor: "#591841",
+                  border:2,
+                  borderColor: "#6F1E51"
                 }}
               >
                 + Customer
@@ -114,7 +142,7 @@ const CustomerPage = () => {
                   Customer Details Form
                 </Modal.Title>
               </Modal.Header>
-              <Modal.Body style={{ backgroundColor: "#cec4ff" }}>
+              <Modal.Body style={{ backgroundColor: "#a97897" }}>
                 <Form>
                   <Form.Group className="mb-3">
                     <Form.Label
@@ -133,7 +161,7 @@ const CustomerPage = () => {
                       }}
                       type="text"
                       value={customerId}
-                      onChange={}
+                      onChange={(e) => setCustomerId(e.target.value)}
                     />
                   </Form.Group>
 
@@ -142,7 +170,7 @@ const CustomerPage = () => {
                       className="font-bold"
                       style={{ fontFamily: "'Ubuntu', sans-serif" }}
                     >
-                      Medicine Name
+                      Customer Name
                     </Form.Label>
                     <Form.Control
                       className="border-2 border-black font-normal"
@@ -151,6 +179,26 @@ const CustomerPage = () => {
                         fontSize: "15px",
                       }}
                       type="text"
+                      value={customerName}
+                      placeholder="Enter customer name"
+                      onChange={(e) => setCustomerName(e.target.value)}
+                    />
+                  </Form.Group>
+
+                  <Form.Group className="mb-3">
+                    <Form.Label
+                      className="font-bold"
+                      style={{ fontFamily: "'Ubuntu', sans-serif" }}
+                    >
+                      Customer Email
+                    </Form.Label>
+                    <Form.Control
+                      className="border-2 border-black font-normal"
+                      style={{
+                        fontFamily: "'Montserrat', serif",
+                        fontSize: "15px",
+                      }}
+                      type="email"
                       value={customerName}
                       placeholder="Enter customer name"
                       onChange={(e) => setCustomerName(e.target.value)}
@@ -172,12 +220,12 @@ const CustomerPage = () => {
                       }}
                       type="text"
                       value={address}
-                      placeholder="Enter medicine brand"
+                      placeholder="Enter customer address"
                       onChange={(e) => setAddress(e.target.value)}
                     />
                   </Form.Group>
 
-                  <Form.Group className="mb-3" controlId="dosage_form">
+                  <Form.Group className="mb-3">
                     <Form.Label
                       className="font-bold"
                       style={{
@@ -203,35 +251,20 @@ const CustomerPage = () => {
               </Modal.Body>
               <Modal.Footer>
                 <Button
-                  style={{
-                    fontFamily: "'Montserrat', serif",
-                    fontSize: "15px",
-                    fontWeight: "600",
-                  }}
                   className="font-bold"
                   variant="primary"
-                  onClick={}
+                  onClick={handleSave}
                 >
                   Save
                 </Button>
                 <Button
-                  style={{
-                    fontFamily: "'Montserrat', serif",
-                    fontSize: "15px",
-                    fontWeight: "600",
-                  }}
                   className="font-bold"
                   variant="success"
-                  onClick={}
+                  onClick={handleUpdate}
                 >
                   Update
                 </Button>
                 <Button
-                  style={{
-                    fontFamily: "'Montserrat', serif",
-                    fontSize: "15px",
-                    fontWeight: "600",
-                  }}
                   className="font-bold"
                   variant="secondary"
                   onClick={handleClose}
@@ -242,84 +275,46 @@ const CustomerPage = () => {
             </Modal>
             <br />
             <div className="overflow-x-auto overflow-y-auto bg-gray-100 p-4 rounded-lg shadow-md">
-              <div className="overflow-x-auto">
-                <Table
-                  striped
-                  bordered
-                  hover
-                  responsive
-                  className="w-full text-center border border-gray-300"
-                >
-                  <thead className="bg-red-500 text-white">
-                    <tr
-                      className="font-bold"
-                      style={{ fontFamily: "'Ubuntu', sans-serif" }}
-                    >
-                      <th className="px-4 py-2 border">customer ID</th>
-                      <th className="px-4 py-2 border">Name</th>
-                      <th className="px-4 py-2 border">address</th>
-                      <th className="px-4 py-2 border">contact num</th>
-                      <th className="px-4 py-2 border">Action</th>
-                    </tr>
-                  </thead>
-                  <tbody
-                    style={{
-                      fontFamily: "'Montserrat', serif",
-                      fontSize: "14px",
-                      fontWeight: "400",
-                    }}
+              <Table
+                striped
+                bordered
+                hover
+                responsive
+                className="w-full text-center border border-gray-300"
+              >
+                <thead className="bg-red-500 text-white">
+                  <tr
+                    className="font-bold"
+                    style={{ fontFamily: "'Ubuntu', sans-serif" }}
                   >
-                    {medicines.map((medicine) => (
-                      <tr
-                        key={medicine.medicineId}
-                        onClick={() => handleEditMedicine(medicine)}
-                        className="hover:bg-blue-100 transition-all"
-                      >
-                        <td className="px-4 py-2 border">
-                          {medicine.medicineId}
-                        </td>
-                        <td className="px-4 py-2 border">
-                          {medicine.medicineName}
-                        </td>
-                        <td className="px-4 py-2 border">{medicine.brand}</td>
-                        <td className="px-4 py-2 border">
-                          {medicine.medicineImg ? (
-                            <img
-                              src={`data:image/jpeg;base64,${medicine.medicineImg}`}
-                              alt="Patient Image"
-                              className="w-[60px] h-[60px] object-cover rounded-full"
-                            />
-                          ) : (
-                            <span>No Image</span>
-                          )}
-                        </td>
-                        <td className="px-4 py-2 border">
-                          {medicine.dosage_form}
-                        </td>
-                        <td className="px-4 py-2 border">
-                          {medicine.unit_price}
-                        </td>
-                        <td className="px-4 py-2 border">
-                          {medicine.quantity_in_stock}
-                        </td>
-                        <td className="px-4 py-2 border">
-                          {medicine.expiry_date}
-                        </td>
-                        <td className="px-4 py-2 border flex justify-center gap-2 h-[80px]">
-                          <button
-                            className="bg-red-500 text-white px-3 h-[40px] py-1 rounded-md hover:bg-red-700"
-                            onClick={(event) =>
-                              handleDeleteMedicine(event, medicine.medicineId)
-                            }
-                          >
-                            Delete
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </Table>
-              </div>
+                    <th>Customer ID</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Contact Num</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customers.map((customer) => (
+                    <tr key={customer.customerId}>
+                      <td>{customer.customerId}</td>
+                      <td>{customer.customerName}</td>
+                      <td>{customer.address}</td>
+                      <td>{customer.contactNum}</td>
+                      <td>
+                        <button
+                          className="bg-red-500 text-white px-3 py-1 rounded-md"
+                          onClick={(event) =>
+                            handleDelete(customer.customerId, event)
+                          }
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             </div>
           </Container>
         </div>
